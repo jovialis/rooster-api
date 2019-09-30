@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-// TODO: Import controllers
+const authController = require('../controllers/authController');
 
-// TODO: Register routes pointing to controllers
+router.post('login/native', authController.login_native_post_middleware, authController.login_native_post);
 
 module.exports = router;

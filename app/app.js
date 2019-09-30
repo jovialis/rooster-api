@@ -10,7 +10,6 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true });
 // Bind connection to error event
 mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
-
 //////////////////////////////
 //// MARK: EXPRESS SETUP
 //////////////////////////////
@@ -18,6 +17,7 @@ mongoose.connection.on('error', console.error.bind(console, 'MongoDB connection 
 const express = require('express');
 const bodyParser = require('body-parser');
 const expressSsl = require('express-sslify');
+const cookies = require('cookies');
 
 // Instantiate router
 const router = express();
@@ -26,6 +26,9 @@ router.disable('X-Powered-By');
 // POST middlewares
 router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
+
+// Cookie get/set support
+router.use(cookies.express([ process.env.COOKIE_SECRET ]));
 
 // Forward to SSL middlewares in production
 if (process.env.NODE_ENV === 'production') {
@@ -59,7 +62,7 @@ router.use((err, req, res, next) => {
 		// Send descriptive error
 		res.status(errorCode).send({
 			error: errorName,
-			description: errorDescription ? errorDescription : null
+			description: errorDescription ? errorDescription : err.message
 		});
 
 	} else {
